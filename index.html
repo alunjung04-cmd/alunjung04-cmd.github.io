@@ -1,446 +1,430 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.2">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; min-height: 15.0px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>홍콩 여행 지도</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            background: rgb(238, 28, 37);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1600px;
+            margin: 30px auto;
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .map-section {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        #map {
+            width: 100%;
+            height: 700px;
+        }
+
+        .sidebar {
+            width: 400px;
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 700px;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 3px solid rgb(238, 28, 37);
+            padding-bottom: 10px;
+        }
+
+        .add-location-form {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: rgb(238, 28, 37);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: rgb(238, 28, 37);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(238, 28, 37, 0.3);
+        }
+
+        .location-list {
+            list-style: none;
+        }
+
+        .location-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .location-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        .location-info {
+            flex: 1;
+        }
+
+        .location-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .location-category {
+            display: inline-block;
+            padding: 3px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        .category-colors {
+            관광명소: #667eea;
+            레스토랑: #f093fb;
+            쇼핑: #4facfe;
+            호텔: #43e97b;
+            기타: #fa709a;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: none;
+            }
+        }
+    </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="ko"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;홍콩 여행 지도&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>* {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-sizing: border-box;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background-color: #f5f5f5;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.header {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: rgb(238, 28, 37);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 30px 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 6px rgba(0,0,0,0.1);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.header h1 {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 2.5em;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 700;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.header p {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2em;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>opacity: 0.9;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.container {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 1600px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 30px auto;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gap: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 0 20px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.map-section {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex: 1;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 12px rgba(0,0,0,0.1);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>#map {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>height: 700px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.sidebar {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 400px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 25px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 12px rgba(0,0,0,0.1);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-height: 700px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>overflow-y: auto;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.sidebar h2 {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.8em;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #333;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 3px solid rgb(238, 28, 37);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding-bottom: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.add-location-form {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 30px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #f8f9fa;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.form-group {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.form-group label {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: block;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 5px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #555;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.form-group input,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.form-group select {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: 2px solid #e0e0e0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 6px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 14px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: border-color 0.3s;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.form-group input:focus,</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.form-group select:focus {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>outline: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-color: rgb(238, 28, 37);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.btn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: rgb(238, 28, 37);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 6px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 16px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: transform 0.2s, box-shadow 0.2s;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.btn:hover {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: translateY(-2px);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 6px 12px rgba(238, 28, 37, 0.3);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.location-list {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>list-style: none;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.location-item {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #f8f9fa;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-left: 4px solid #667eea;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.3s;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>justify-content: space-between;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.location-item:hover {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #e9ecef;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transform: translateX(5px);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 3px 8px rgba(0,0,0,0.1);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.location-info {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>flex: 1;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.location-name {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: #333;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 5px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.1em;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.location-category {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>display: inline-block;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 3px 10px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #667eea;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 0.8em;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 5px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.delete-btn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #dc3545;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 6px 12px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 4px;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 0.9em;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transition: background 0.3s;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.delete-btn:hover {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #c82333;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.category-colors {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>관광명소: #667eea;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>레스토랑: #f093fb;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>쇼핑: #4facfe;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>호텔: #43e97b;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>기타: #fa709a;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>@media (max-width: 1024px) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>.container {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>.sidebar {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>max-height: none;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="header"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h1&gt;🇭🇰홍콩지도&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;이거 진짜 작동 하는거냐?&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="container"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="map-section"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="map"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="sidebar"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2&gt;여행지 추가&lt;/h2&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="add-location-form"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="form-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;label for="locationName"&gt;장소명&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;input type="text" id="locationName" placeholder="예: 빅토리아 피크"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="form-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;label for="locationAddress"&gt;주소 또는 검색어&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;input type="text" id="locationAddress" placeholder="예: Victoria Peak, Hong Kong"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="form-group"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;label for="locationCategory"&gt;카테고리&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;select id="locationCategory"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;option value="관광명소"&gt;관광명소&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;option value="레스토랑"&gt;레스토랑&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;option value="쇼핑"&gt;쇼핑&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;option value="호텔"&gt;호텔&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;option value="기타"&gt;기타&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/select&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="btn" onclick="addLocation()"&gt;장소 추가&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2&gt;여행지 목록&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;ul class="location-list" id="locationList"&gt;&lt;/ul&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let map;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let geocoder;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let markers = [];</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let locations = [];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Google Maps 초기화</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function initMap() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>// 홍콩 중심 좌표</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const hongKong = { lat: 22.3193, lng: 114.1694 };</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>map = new google.maps.Map(document.getElementById('map'), {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>zoom: 12,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>center: hongKong,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>mapTypeControl: true,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>streetViewControl: true,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>fullscreenControl: true,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>styles: [</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>featureType: "poi",</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>elementType: "labels",</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>stylers: [{ visibility: "on" }]</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>]</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>geocoder = new google.maps.Geocoder();</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// 샘플 데이터 추가</p>
-<p class="p1"><span class="Apple-converted-space">            </span>addSampleLocations();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 샘플 데이터</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function addSampleLocations() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const samples = [</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{ name: '빅토리아 피크', address: 'Victoria Peak, Hong Kong', category: '관광명소' },</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{ name: '심포니 오브 라이트', address: 'Tsim Sha Tsui Promenade, Hong Kong', category: '관광명소' },</p>
-<p class="p1"><span class="Apple-converted-space">                </span>{ name: '침사추이', address: 'Tsim Sha Tsui, Hong Kong', category: '쇼핑' }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>samples.forEach(location =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>geocodeAndAddLocation(location.name, location.address, location.category);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 주소를 좌표로 변환하고 마커 추가</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function geocodeAndAddLocation(name, address, category) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>geocoder.geocode({ address: address }, (results, status) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (status === 'OK') {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const position = results[0].geometry.location;</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const location = {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>name: name,</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>address: address,</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>category: category,</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>position: { lat: position.lat(), lng: position.lng() }</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>locations.push(location);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>addMarker(location);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>updateLocationList();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>alert('주소를 찾을 수 없습니다: ' + status);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 마커 추가</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function addMarker(location) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const categoryColors = {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>'관광명소': '#667eea',</p>
-<p class="p1"><span class="Apple-converted-space">                </span>'레스토랑': '#f093fb',</p>
-<p class="p1"><span class="Apple-converted-space">                </span>'쇼핑': '#4facfe',</p>
-<p class="p1"><span class="Apple-converted-space">                </span>'호텔': '#43e97b',</p>
-<p class="p1"><span class="Apple-converted-space">                </span>'기타': '#fa709a'</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const marker = new google.maps.Marker({</p>
-<p class="p1"><span class="Apple-converted-space">                </span>position: location.position,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>map: map,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>title: location.name,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>animation: google.maps.Animation.DROP,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>icon: {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>path: google.maps.SymbolPath.CIRCLE,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>scale: 10,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>fillColor: categoryColors[location.category],</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>fillOpacity: 1,</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>strokeColor: '#ffffff',</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>strokeWeight: 2</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const infoWindow = new google.maps.InfoWindow({</p>
-<p class="p1"><span class="Apple-converted-space">                </span>content: `</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div style="padding: 10px;"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h3 style="margin: 0 0 5px 0; color: #333;"&gt;${location.name}&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p style="margin: 0; color: #666; font-size: 0.9em;"&gt;${location.category}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p style="margin: 5px 0 0 0; color: #999; font-size: 0.85em;"&gt;${location.address}&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>`</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>marker.addListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>infoWindow.open(map, marker);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>markers.push(marker);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 장소 추가 함수</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function addLocation() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const name = document.getElementById('locationName').value.trim();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const address = document.getElementById('locationAddress').value.trim();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const category = document.getElementById('locationCategory').value;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (!name || !address) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>alert('장소명과 주소를 모두 입력해주세요.');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>geocodeAndAddLocation(name, address, category);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// 입력 필드 초기화</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('locationName').value = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('locationAddress').value = '';</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 목록 업데이트</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function updateLocationList() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const list = document.getElementById('locationList');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>list.innerHTML = '';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>locations.forEach((location, index) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const li = document.createElement('li');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>li.className = 'location-item';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>li.innerHTML = `</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="location-info"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="location-name"&gt;${location.name}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;span class="location-category"&gt;${location.category}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button class="delete-btn" onclick="deleteLocation(${index})"&gt;삭제&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>`;</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>li.addEventListener('click', (e) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (!e.target.classList.contains('delete-btn')) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>map.setCenter(location.position);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>map.setZoom(15);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>google.maps.event.trigger(markers[index], 'click');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>list.appendChild(li);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// 장소 삭제</p>
-<p class="p1"><span class="Apple-converted-space">        </span>function deleteLocation(index) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>if (confirm('이 장소를 삭제하시겠습니까?')) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>markers[index].setMap(null);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>markers.splice(index, 1);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>locations.splice(index, 1);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>updateLocationList();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Enter 키로 장소 추가</p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.addEventListener('DOMContentLoaded', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('locationAddress').addEventListener('keypress', (e) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (e.key === 'Enter') {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>addLocation();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Google Maps API --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaR4ruLJ7CSloiWWEwlPomQv9vtBDTlB8&amp;callback=initMap&amp;language=ko" async defer&gt;&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+    <div class="header">
+        <h1>🇭🇰홍콩지도</h1>
+        <p>이거 진짜 작동 하는거냐?</p>
+    </div>
+
+    <div class="container">
+        <div class="map-section">
+            <div id="map"></div>
+        </div>
+
+        <div class="sidebar">
+            <h2>여행지 추가</h2>
+            
+            <div class="add-location-form">
+                <div class="form-group">
+                    <label for="locationName">장소명</label>
+                    <input type="text" id="locationName" placeholder="예: 빅토리아 피크">
+                </div>
+                
+                <div class="form-group">
+                    <label for="locationAddress">주소 또는 검색어</label>
+                    <input type="text" id="locationAddress" placeholder="예: Victoria Peak, Hong Kong">
+                </div>
+                
+                <div class="form-group">
+                    <label for="locationCategory">카테고리</label>
+                    <select id="locationCategory">
+                        <option value="관광명소">관광명소</option>
+                        <option value="레스토랑">레스토랑</option>
+                        <option value="쇼핑">쇼핑</option>
+                        <option value="호텔">호텔</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="addLocation()">장소 추가</button>
+            </div>
+
+            <h2>여행지 목록</h2>
+            <ul class="location-list" id="locationList"></ul>
+        </div>
+    </div>
+
+    <script>
+        let map;
+        let geocoder;
+        let markers = [];
+        let locations = [];
+
+        // Google Maps 초기화
+        function initMap() {
+            // 홍콩 중심 좌표
+            const hongKong = { lat: 22.3193, lng: 114.1694 };
+            
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: hongKong,
+                mapTypeControl: true,
+                streetViewControl: true,
+                fullscreenControl: true,
+                styles: [
+                    {
+                        featureType: "poi",
+                        elementType: "labels",
+                        stylers: [{ visibility: "on" }]
+                    }
+                ]
+            });
+
+            geocoder = new google.maps.Geocoder();
+
+            // 샘플 데이터 추가
+            addSampleLocations();
+        }
+
+        // 샘플 데이터
+        function addSampleLocations() {
+            const samples = [
+                { name: '빅토리아 피크', address: 'Victoria Peak, Hong Kong', category: '관광명소' },
+                { name: '심포니 오브 라이트', address: 'Tsim Sha Tsui Promenade, Hong Kong', category: '관광명소' },
+                { name: '침사추이', address: 'Tsim Sha Tsui, Hong Kong', category: '쇼핑' }
+            ];
+
+            samples.forEach(location => {
+                geocodeAndAddLocation(location.name, location.address, location.category);
+            });
+        }
+
+        // 주소를 좌표로 변환하고 마커 추가
+        function geocodeAndAddLocation(name, address, category) {
+            geocoder.geocode({ address: address }, (results, status) => {
+                if (status === 'OK') {
+                    const position = results[0].geometry.location;
+                    
+                    const location = {
+                        name: name,
+                        address: address,
+                        category: category,
+                        position: { lat: position.lat(), lng: position.lng() }
+                    };
+
+                    locations.push(location);
+                    addMarker(location);
+                    updateLocationList();
+                } else {
+                    alert('주소를 찾을 수 없습니다: ' + status);
+                }
+            });
+        }
+
+        // 마커 추가
+        function addMarker(location) {
+            const categoryColors = {
+                '관광명소': '#667eea',
+                '레스토랑': '#f093fb',
+                '쇼핑': '#4facfe',
+                '호텔': '#43e97b',
+                '기타': '#fa709a'
+            };
+
+            const marker = new google.maps.Marker({
+                position: location.position,
+                map: map,
+                title: location.name,
+                animation: google.maps.Animation.DROP,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: categoryColors[location.category],
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2
+                }
+            });
+
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="padding: 10px;">
+                        <h3 style="margin: 0 0 5px 0; color: #333;">${location.name}</h3>
+                        <p style="margin: 0; color: #666; font-size: 0.9em;">${location.category}</p>
+                        <p style="margin: 5px 0 0 0; color: #999; font-size: 0.85em;">${location.address}</p>
+                    </div>
+                `
+            });
+
+            marker.addListener('click', () => {
+                infoWindow.open(map, marker);
+            });
+
+            markers.push(marker);
+        }
+
+        // 장소 추가 함수
+        function addLocation() {
+            const name = document.getElementById('locationName').value.trim();
+            const address = document.getElementById('locationAddress').value.trim();
+            const category = document.getElementById('locationCategory').value;
+
+            if (!name || !address) {
+                alert('장소명과 주소를 모두 입력해주세요.');
+                return;
+            }
+
+            geocodeAndAddLocation(name, address, category);
+
+            // 입력 필드 초기화
+            document.getElementById('locationName').value = '';
+            document.getElementById('locationAddress').value = '';
+        }
+
+        // 목록 업데이트
+        function updateLocationList() {
+            const list = document.getElementById('locationList');
+            list.innerHTML = '';
+
+            locations.forEach((location, index) => {
+                const li = document.createElement('li');
+                li.className = 'location-item';
+                li.innerHTML = `
+                    <div class="location-info">
+                        <div class="location-name">${location.name}</div>
+                        <span class="location-category">${location.category}</span>
+                    </div>
+                    <button class="delete-btn" onclick="deleteLocation(${index})">삭제</button>
+                `;
+                
+                li.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('delete-btn')) {
+                        map.setCenter(location.position);
+                        map.setZoom(15);
+                        google.maps.event.trigger(markers[index], 'click');
+                    }
+                });
+
+                list.appendChild(li);
+            });
+        }
+
+        // 장소 삭제
+        function deleteLocation(index) {
+            if (confirm('이 장소를 삭제하시겠습니까?')) {
+                markers[index].setMap(null);
+                markers.splice(index, 1);
+                locations.splice(index, 1);
+                updateLocationList();
+            }
+        }
+
+        // Enter 키로 장소 추가
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('locationAddress').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    addLocation();
+                }
+            });
+        });
+    </script>
+
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaR4ruLJ7CSloiWWEwlPomQv9vtBDTlB8&callback=initMap&language=ko" async defer></script>
 </body>
 </html>
