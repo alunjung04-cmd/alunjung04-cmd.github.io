@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>홍콩 여행 지도</title>
+
+    <style>
+
+        * {
+
+            margin: 0;
+
+            padding: 0;
+
+            box-sizing: border-box;
+
+        }
+
+
+
+        body {
+
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+            background-color: #f5f5f5;
+
+        }
+
+
+
+        .header {
+
+            background: rgb(238, 28, 37);
+
+            color: white;
+
+            padding: 30px 20px;
+
+            text-align: center;
+
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+        }
+
+
+
+        .header h1 {
+
+            font-size: 2.5em;
+
+            margin-bottom: 10px;
+
+            font-weight: 700;
+
+        }
+
+
+
+        .header p {
+
+            font-size: 1.2em;
+
+            opacity: 0.9;
+
+        }
+
+
+
+        .container {
+
+            display: flex;
+
+            max-width: 1600px;
+
+            margin: 30px auto;
+
+            gap: 20px;
+
+            padding: 0 20px;
+
+        }
+
+
+
+        .map-section {
+
+            flex: 1;
+
+            background: white;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+        }
+
+
+
+        #map {
+
+            width: 100%;
+
+            height: 700px;
+
+        }
+
+
+
+        .sidebar {
+
+            width: 400px;
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 25px;
+
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+            max-height: 700px;
+
+            overflow-y: auto;
+
+        }
+
+
+
+        .sidebar h2 {
+
+            font-size: 1.8em;
+
+            margin-bottom: 20px;
+
+            color: #333;
+
+            border-bottom: 3px solid rgb(238, 28, 37);
+
+            padding-bottom: 10px;
+
+        }
+
+
+
+        .add-location-form {
+
+            margin-bottom: 30px;
+
+            padding: 20px;
+
+            background: #f8f9fa;
+
+            border-radius: 8px;
+
+        }
+
+
+
+        .form-group {
+
+            margin-bottom: 15px;
+
+        }
+
+
+
+        .form-group label {
+
+            display: block;
+
+            margin-bottom: 5px;
+
+            font-weight: 600;
+
+            color: #555;
+
+        }
+
+
+
+        .form-group input,
+
+        .form-group select {
+
+            width: 100%;
+
+            padding: 10px;
+
+            border: 2px solid #e0e0e0;
+
+            border-radius: 6px;
+
+            font-size: 14px;
+
+            transition: border-color 0.3s;
+
+        }
+
+
+
+        .form-group input:focus,
+
+        .form-group select:focus {
+
+            outline: none;
+
+            border-color: rgb(238, 28, 37);
+
+        }
+
+
+
+        .btn {
+
+            width: 100%;
+
+            padding: 12px;
+
+            background: rgb(238, 28, 37);
+
+            color: white;
+
+            border: none;
+
+            border-radius: 6px;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: transform 0.2s, box-shadow 0.2s;
+
+        }
+
+
+
+        .btn:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 6px 12px rgba(238, 28, 37, 0.3);
+
+        }
+
+
+
+        .location-list {
+
+            list-style: none;
+
+        }
+
+
+
+        .location-item {
+
+            padding: 15px;
+
+            margin-bottom: 12px;
+
+            background: #f8f9fa;
+
+            border-radius: 8px;
+
+            border-left: 4px solid #667eea;
+
+            cursor: pointer;
+
+            transition: all 0.3s;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+        }
+
+
+
+        .location-item:hover {
+
+            background: #e9ecef;
+
+            transform: translateX(5px);
+
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+
+        }
+
+
+
+        .location-info {
+
+            flex: 1;
+
+        }
+
+
+
+        .location-name {
+
+            font-weight: 600;
+
+            color: #333;
+
+            margin-bottom: 5px;
+
+            font-size: 1.1em;
+
+        }
+
+
+
+        .location-category {
+
+            display: inline-block;
+
+            padding: 3px 10px;
+
+            background: #667eea;
+
+            color: white;
+
+            border-radius: 12px;
+
+            font-size: 0.8em;
+
+            margin-top: 5px;
+
+        }
+
+
+
+        .delete-btn {
+
+            background: #dc3545;
+
+            color: white;
+
+            border: none;
+
+            padding: 6px 12px;
+
+            border-radius: 4px;
+
+            cursor: pointer;
+
+            font-size: 0.9em;
+
+            transition: background 0.3s;
+
+        }
+
+
+
+        .delete-btn:hover {
+
+            background: #c82333;
+
+        }
+
+
+
+        .category-colors {
+
+            관광명소: #667eea;
+
+            레스토랑: #f093fb;
+
+            쇼핑: #4facfe;
+
+            호텔: #43e97b;
+
+            기타: #fa709a;
+
+        }
+
+
+
+        @media (max-width: 1024px) {
+
+            .container {
+
+                flex-direction: column;
+
+            }
+
+
+
+            .sidebar {
+
+                width: 100%;
+
+                max-height: none;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="header">
+
+        <h1>🇭🇰홍콩지도</h1>
+
+        <p>이거 진짜 작동 하는거냐?</p>
+
+    </div>
+
+
+
+    <div class="container">
+
+        <div class="map-section">
+
+            <div id="map"></div>
+
+        </div>
+
+
+
+        <div class="sidebar">
+
+            <h2>여행지 추가</h2>
+
+            
+
+            <div class="add-location-form">
+
+                <div class="form-group">
+
+                    <label for="locationName">장소명</label>
+
+                    <input type="text" id="locationName" placeholder="예: 빅토리아 피크">
+
+                </div>
+
+                
+
+                <div class="form-group">
+
+                    <label for="locationAddress">주소 또는 검색어</label>
+
+                    <input type="text" id="locationAddress" placeholder="예: Victoria Peak, Hong Kong">
+
+                </div>
+
+                
+
+                <div class="form-group">
+
+                    <label for="locationCategory">카테고리</label>
+
+                    <select id="locationCategory">
+
+                        <option value="관광명소">관광명소</option>
+
+                        <option value="레스토랑">레스토랑</option>
+
+                        <option value="쇼핑">쇼핑</option>
+
+                        <option value="호텔">호텔</option>
+
+                        <option value="기타">기타</option>
+
+                    </select>
+
+                </div>
+
+                
+
+                <button class="btn" onclick="addLocation()">장소 추가</button>
+
+            </div>
+
+
+
+            <h2>여행지 목록</h2>
+
+            <ul class="location-list" id="locationList"></ul>
+
+        </div>
+
+    </div>
+
+
+
+    <script>
+
+        let map;
+
+        let geocoder;
+
+        let markers = [];
+
+        let locations = [];
+
+
+
+        // Google Maps 초기화
+
+        function initMap() {
+
+            // 홍콩 중심 좌표
+
+            const hongKong = { lat: 22.3193, lng: 114.1694 };
+
+            
+
+            map = new google.maps.Map(document.getElementById('map'), {
+
+                zoom: 12,
+
+                center: hongKong,
+
+                mapTypeControl: true,
+
+                streetViewControl: true,
+
+                fullscreenControl: true,
+
+                styles: [
+
+                    {
+
+                        featureType: "poi",
+
+                        elementType: "labels",
+
+                        stylers: [{ visibility: "on" }]
+
+                    }
+
+                ]
+
+            });
+
+
+
+            geocoder = new google.maps.Geocoder();
+
+
+
+            // 샘플 데이터 추가
+
+            addSampleLocations();
+
+        }
+
+
+
+        // 샘플 데이터
+
+        function addSampleLocations() {
+
+            const samples = [
+
+                { name: '빅토리아 피크', address: 'Victoria Peak, Hong Kong', category: '관광명소' },
+
+                { name: '심포니 오브 라이트', address: 'Tsim Sha Tsui Promenade, Hong Kong', category: '관광명소' },
+
+                { name: '침사추이', address: 'Tsim Sha Tsui, Hong Kong', category: '쇼핑' }
+
+            ];
+
+
+
+            samples.forEach(location => {
+
+                geocodeAndAddLocation(location.name, location.address, location.category);
+
+            });
+
+        }
+
+
+
+        // 주소를 좌표로 변환하고 마커 추가
+
+        function geocodeAndAddLocation(name, address, category) {
+
+            geocoder.geocode({ address: address }, (results, status) => {
+
+                if (status === 'OK') {
+
+                    const position = results[0].geometry.location;
+
+                    
+
+                    const location = {
+
+                        name: name,
+
+                        address: address,
+
+                        category: category,
+
+                        position: { lat: position.lat(), lng: position.lng() }
+
+                    };
+
+
+
+                    locations.push(location);
+
+                    addMarker(location);
+
+                    updateLocationList();
+
+                } else {
+
+                    alert('주소를 찾을 수 없습니다: ' + status);
+
+                }
+
+            });
+
+        }
+
+
+
+        // 마커 추가
+
+        function addMarker(location) {
+
+            const categoryColors = {
+
+                '관광명소': '#667eea',
+
+                '레스토랑': '#f093fb',
+
+                '쇼핑': '#4facfe',
+
+                '호텔': '#43e97b',
+
+                '기타': '#fa709a'
+
+            };
+
+
+
+            const marker = new google.maps.Marker({
+
+                position: location.position,
+
+                map: map,
+
+                title: location.name,
+
+                animation: google.maps.Animation.DROP,
+
+                icon: {
+
+                    path: google.maps.SymbolPath.CIRCLE,
+
+                    scale: 10,
+
+                    fillColor: categoryColors[location.category],
+
+                    fillOpacity: 1,
+
+                    strokeColor: '#ffffff',
+
+                    strokeWeight: 2
+
+                }
+
+            });
+
+
+
+            const infoWindow = new google.maps.InfoWindow({
+
+                content: `
+
+                    <div style="padding: 10px;">
+
+                        <h3 style="margin: 0 0 5px 0; color: #333;">${location.name}</h3>
+
+                        <p style="margin: 0; color: #666; font-size: 0.9em;">${location.category}</p>
+
+                        <p style="margin: 5px 0 0 0; color: #999; font-size: 0.85em;">${location.address}</p>
+
+                    </div>
+
+                `
+
+            });
+
+
+
+            marker.addListener('click', () => {
+
+                infoWindow.open(map, marker);
+
+            });
+
+
+
+            markers.push(marker);
+
+        }
+
+
+
+        // 장소 추가 함수
+
+        function addLocation() {
+
+            const name = document.getElementById('locationName').value.trim();
+
+            const address = document.getElementById('locationAddress').value.trim();
+
+            const category = document.getElementById('locationCategory').value;
+
+
+
+            if (!name || !address) {
+
+                alert('장소명과 주소를 모두 입력해주세요.');
+
+                return;
+
+            }
+
+
+
+            geocodeAndAddLocation(name, address, category);
+
+
+
+            // 입력 필드 초기화
+
+            document.getElementById('locationName').value = '';
+
+            document.getElementById('locationAddress').value = '';
+
+        }
+
+
+
+        // 목록 업데이트
+
+        function updateLocationList() {
+
+            const list = document.getElementById('locationList');
+
+            list.innerHTML = '';
+
+
+
+            locations.forEach((location, index) => {
+
+                const li = document.createElement('li');
+
+                li.className = 'location-item';
+
+                li.innerHTML = `
+
+                    <div class="location-info">
+
+                        <div class="location-name">${location.name}</div>
+
+                        <span class="location-category">${location.category}</span>
+
+                    </div>
+
+                    <button class="delete-btn" onclick="deleteLocation(${index})">삭제</button>
+
+                `;
+
+                
+
+                li.addEventListener('click', (e) => {
+
+                    if (!e.target.classList.contains('delete-btn')) {
+
+                        map.setCenter(location.position);
+
+                        map.setZoom(15);
+
+                        google.maps.event.trigger(markers[index], 'click');
+
+                    }
+
+                });
+
+
+
+                list.appendChild(li);
+
+            });
+
+        }
+
+
+
+        // 장소 삭제
+
+        function deleteLocation(index) {
+
+            if (confirm('이 장소를 삭제하시겠습니까?')) {
+
+                markers[index].setMap(null);
+
+                markers.splice(index, 1);
+
+                locations.splice(index, 1);
+
+                updateLocationList();
+
+            }
+
+        }
+
+
+
+        // Enter 키로 장소 추가
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            document.getElementById('locationAddress').addEventListener('keypress', (e) => {
+
+                if (e.key === 'Enter') {
+
+                    addLocation();
+
+                }
+
+            });
+
+        });
+
+    </script>
+
+
+
+    <!-- Google Maps API -->
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaR4ruLJ7CSloiWWEwlPomQv9vtBDTlB8&callback=initMap&language=ko" async defer></script>
+
+</body>
+
+</html>
